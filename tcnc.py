@@ -143,7 +143,8 @@ def handle_message(msg):
 	pcall = msg['type']
 	pl = literal_eval(formatting.decode(msg['data'],key)) # pl = payload (the encrypted data sent with the message)
 	if pcall == "hello":
-		#TODO: continue here
+		name = pl['name']
+		#TODO: CONT HERE
 
 
 
