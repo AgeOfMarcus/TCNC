@@ -1,4 +1,4 @@
-import base64
+import base64, os, uuid
 
 # The base message format
 base = {
@@ -12,10 +12,14 @@ types = [
 	'cmdreq', # A request for a command
 	'error', # A client error
 	'result', # Result of a command (from cmdreq)
+	'hello', # Client announcing that they are present
 ]
 
 # Data strunctures
 cmdreq = {} # Just blank
+hello = {
+	'name':'XXXXXX', # Agent name, (first 4 chars from (result of 'whoami')) + last 4 chars of mac addr (w/o ':'s)
+}
 error = {
 	'time':'XXXXXX', # Time that the error occured
 	'errormsg':'XXXXXXXXXXXX', # The actual error message
