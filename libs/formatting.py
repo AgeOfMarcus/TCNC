@@ -1,4 +1,4 @@
-import base64, os, uuid
+import base64, os, uuid, random
 
 # The base message format
 base = {
@@ -31,6 +31,7 @@ result = {
 		'recv':'XXXXXX', # Time that message was recieved
 		'sent':'XXXXXX', # Time that response was sent
 	} # Timestamps
+}
 
 # Encoding and decoding functions (thanks, random guy on StackOverflow)
 def encode(clear,key):
@@ -48,3 +49,12 @@ def decode(enc,key):
 		dec_c = chr((256 + ord(enc[i]) - ord(key_c)) % 256)
 		dec.append(dec_c)
 	return "".join(dec)
+
+def gen_key():
+	rand1 = list(str(os.urandom(16))) # True random
+	rand1.remove(rand1[0]); rand1.remove(rand1[1]); rand1.remove(rand1[-1]); rand1 = ''.join(rand1) # Get rid of the b''
+	rand2 = str(uuid.uuid4()) # Nice uuid
+	rand = ''
+	while len(rand) < 32:
+		rand += random.choice(rand1) + random.choice(rand2)
+	return rand
