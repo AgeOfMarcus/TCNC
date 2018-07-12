@@ -91,8 +91,14 @@ def handle_message(msg):
 	key = get_cli_key(msg['cliid'])
 	pcall = msg['type']
 	pl = literal_eval(formatting.decode(msg['data'],key)) # pl = payload (the encrypted data sent with the message)
+<<<<<<< HEAD
 	if pcall == "hello": pass
 		#TODO: continue here
+=======
+	if pcall == "hello":
+		name = pl['name']
+		#TODO: CONT HERE
+>>>>>>> 555cc82c3193ab2d44df047b1896d9384f6feb30
 
 
 
