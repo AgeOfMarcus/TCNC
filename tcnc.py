@@ -27,19 +27,26 @@ def done(msg): return "[ %s ] : %s" % (c("DONE","green"),msg)
 db = sqlite3.connect("databse.db")
 cursor = db.cursor()
 cursor.execute("CREATE TABLE IF NOT EXISTS keys (CLIID TEXT PRIMARY KEY, KEY TEXT)")
+db.commit(); db.close()
+
+def sql(cmd):
+	with sqlite3.connect("database.db") as db:
+		res = db.cursor().execute(cmd).fetchall()
+		db.commit()
+	return res
 
 def get_cli_key(cliid):
-	res = cursor.execute("SELECT KEY FROM keys WHERE CLIID='%s'" % cliid).fetchall()
+	res = sql("SELECT KEY FROM keys WHERE CLIID='%s'" % cliid)
 	if len(res) == 0:
 		return False
 	return res[0][0]
 def new_cli():
 	cliid = str(uuid.uuid4())
 	key = formatting.gen_key()
-	cursor.execute("INSERT INTO keys (CLIID, KEY) VALUES ('%s','%s')" % (cliid,key))
+	sql("INSERT INTO keys (CLIID, KEY) VALUES ('%s','%s')" % (cliid,key))
 	return cliid, key
 def all_cliids():
-	lst = cursor.execute("SELECT CLIID FROM keys").fetchall()
+	lst = sql("SELECT CLIID FROM keys")
 	cliids = []
 	for i in lst:
 		cliids.append(i[0])
